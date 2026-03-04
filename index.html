@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>VoidWare V10 Simulation</title>
+
+<style>
+body{
+  margin:0;
+  font-family:monospace;
+  background:#0a0a0a;
+  color:#00ff88;
+  overflow:hidden;
+}
+
+/* ================== START SCREEN ================== */
+#startScreen{
+  position:fixed;
+  width:100%;
+  height:100%;
+  background:#000;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  z-index:9999;
+}
+
+#startScreen h1{
+  font-size:36px;
+  margin-bottom:20px;
+  animation:glitch 1s infinite;
+}
+
+#startScreen button{
+  padding:12px 25px;
+  background:black;
+  color:#00ff88;
+  border:2px solid #00ff88;
+  cursor:pointer;
+  font-size:18px;
+  transition:0.3s;
+}
+
+#startScreen button:hover{
+  background:#00ff88;
+  color:black;
+}
+
+/* LOADER */
+#loader{
+  position:fixed;
+  width:100%;
+  height:100%;
+  background:black;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  z-index:9999;
+  display:none;
+}
+
+#loader h1{
+  font-size:28px;
+  margin-bottom:20px;
+  animation:glitch 1s infinite;
+}
+
+@keyframes glitch{
+  0%{text-shadow:2px 0 red;}
+  25%{text-shadow:-2px 0 blue;}
+  50%{text-shadow:2px 2px lime;}
+  75%{text-shadow:-2px -2px yellow;}
+  100%{text-shadow:2px 0 red;}
+}
+
+.load-bar-container{
+  width:300px;
+  height:20px;
+  background:#222;
+}
+
+.load-bar{
+  width:0%;
+  height:100%;
+  background:#00ff88;
+  text-align:center;
+  color:black;
+  font-weight:bold;
+}
+
+/* ================= MAIN APP ================= */
+#app{
+  display:none;
+  height:100vh;
+  display:flex;
+}
+
+/* Sidebar */
+.sidebar{
+  width:230px;
+  background:#111;
+  height:100vh;
+  padding:20px;
+  border-right:2px solid #00ff88;
+  overflow:auto;
+}
+
+.sidebar h2{
+  text-align:center;
+  animation:glitch 2s infinite;
+}
+
+.sidebar h3{
+  margin-top:20px;
+}
+
+.sidebar button{
+  width:100%;
+  margin:5px 0;
+  padding:8px;
+  background:black;
+  color:#00ff88;
+  border:1px solid #00ff88;
+  cursor:pointer;
+  transition:0.2s;
+}
+
+.sidebar button:hover{
+  background:#00ff88;
+  color:black;
+}
+
+/* Main */
+.main{
+  flex:1;
+  padding:20px;
+}
+
+input{
+  padding:8px;
+  background:black;
+  color:#00ff88;
+  border:1px solid #00ff88;
+  width:220px;
+}
+
+button{
+  margin-top:5px;
+  padding:8px 15px;
+  background:black;
+  color:#00ff88;
+  border:1px solid #00ff88;
+  cursor:pointer;
+}
+
+button:hover{
+  background:#00ff88;
+  color:black;
+}
+
+.console{
+  margin-top:20px;
+  border-top:1px solid #00ff88;
+  padding-top:10px;
+  height:150px;
+  overflow:auto;
+  font-size:14px;
+  transition:0.2s;
+}
+
+.hidden{
+  display:none;
+}
+
+.player-menu{
+  margin-top:15px;
+}
+
+/* Toggle */
+.toggle-container{
+  display:flex;
+  align-items:center;
+  margin:5px 0;
+}
+
+.toggle-label{
+  flex:1;
+  cursor:pointer;
+}
+
+.toggle-switch{
+  position:relative;
+  width:50px;
+  height:24px;
+}
+
+.toggle-switch input{
+  display:none;
+}
+
+.slider{
+  position:absolute;
+  cursor:pointer;
+  top:0;
+  left:0;
+  right:0;
+  bottom:0;
+  background:#222;
+  transition:0.4s;
+  border:1px solid #00ff88;
+  border-radius:24px;
+}
+
+.slider:before{
+  position:absolute;
+  content:"";
+  height:18px;
+  width:18px;
+  left:3px;
+  bottom:3px;
+  background:#00ff88;
+  transition:0.4s;
+  border-radius:50%;
+}
+
+input:checked + .slider{
+  background:#00ff88;
+}
+
+input:checked + .slider:before{
+  left:29px;
+  background:black;
+}
+
+/* Glitch animation for LocalPlayer */
+@keyframes textGlitch{
+  0%{transform: translate(1px, 0);}
+  20%{transform: translate(-1px, 1px);}
+  40%{transform: translate(-1px, -1px);}
+  60%{transform: translate(1px, 1px);}
+  80%{transform: translate(-1px, 0);}
+  100%{transform: translate(1px, -1px);}
+}
+
+.glitch{
+  animation: textGlitch 0.3s infinite;
+  color:#00ff88;
+  text-shadow:1px 1px red, -1px -1px blue;
+  cursor:pointer;
+}
+</style>
+</head>
+
+<body>
+
+<!-- ================= START SCREEN ================= -->
+<div id="startScreen">
+  <h1>VoidWare V10</h1>
+  <button onclick="startScript()">Démarrer le script</button>
+</div>
+
+<!-- LOADER -->
+<div id="loader">
+  <h1>Injecting VoidWare...</h1>
+  <div class="load-bar-container">
+    <div class="load-bar" id="loadBar">0%</div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+
+<div class="sidebar">
+  <h2 class="glitch">VOIDWARE</h2>
+  <a href="VoidWareV10.zip" download>
+  <button>Télécharger l'appli</button>
+</a>
+
+  <h3>Bring Stuff</h3>
+  <button onclick="alertStuff('Bois généré avec succès')">Pleuvoir du bois</button>
+  <button onclick="alertStuff('Ferraille générée')">Du ferraille</button>
+  <button onclick="alertStuff('Feu niveau max')">Feu niveau max</button>
+  <button onclick="alertStuff('Armure et arme générées')">Armure & arme</button>
+  <button onclick="alertStuff('Bandage ajouté')">Bandage</button>
+
+  <h3>Téléportation</h3>
+  <button onclick="teleport('Dino Kid')">Dino Kid</button>
+  <button onclick="teleport('Kraken Kid')">Kraken Kid</button>
+  <button onclick="teleport('Grap Kid')">Grap Kid</button>
+  <button onclick="teleport('Koala Kid')">Koala Kid</button>
+  <button onclick="teleport('Forteresse')">Forteresse</button>
+  <button onclick="teleport('Feu')">Feu</button>
+  <button onclick="teleport('Chateau')">Chateau</button>
+</div>
+
+<div class="main">
+  <h1>Bienvenue sur VoidWare V10</h1>
+
+  <!-- COMPTE -->
+  <div id="accountSection">
+    <h3>Votre compte Roblox</h3>
+    <p style="font-size:13px;color:gray;">(Simulation uniquement)</p>
+    <input type="text" id="username" value="PhilippeDang">
+    <br>
+    <button onclick="saveUser()">Valider</button>
+  </div>
+
+  <!-- LOCAL PLAYER -->
+  <div id="localPlayerSection" class="hidden">
+    <h3 class="glitch" onclick="togglePlayerMenu()">LocalPlayer</h3>
+    <div id="playerMenu" class="player-menu hidden">
+      <!-- Toggle features -->
+      <div class="toggle-container">
+        <span class="toggle-label">Fly</span>
+        <label class="toggle-switch">
+          <input type="checkbox" onchange="toggleFeature(this,'Fly')">
+          <span class="slider"></span>
+        </label>
+      </div>
+      <div class="toggle-container">
+        <span class="toggle-label">Fly Speed</span>
+        <label class="toggle-switch">
+          <input type="checkbox" onchange="toggleFeature(this,'Fly Speed')">
+          <span class="slider"></span>
+        </label>
+      </div>
+      <div class="toggle-container">
+        <span class="toggle-label">Speed</span>
+        <label class="toggle-switch">
+          <input type="checkbox" onchange="toggleFeature(this,'Speed')">
+          <span class="slider"></span>
+        </label>
+      </div>
+      <div class="toggle-container">
+        <span class="toggle-label">Infinity Jump</span>
+        <label class="toggle-switch">
+          <input type="checkbox" onchange="toggleFeature(this,'Infinity Jump')">
+          <span class="slider"></span>
+        </label>
+      </div>
+      <div class="toggle-container">
+        <span class="toggle-label">Noclip</span>
+        <label class="toggle-switch">
+          <input type="checkbox" onchange="toggleFeature(this,'Noclip')">
+          <span class="slider"></span>
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <p style="margin-top:15px;">Rejoignez moi en Discord :</p>
+  <button onclick="window.location.href='https://discord.gg//philippedang/user'">Discord</button>
+
+  <h3 style="margin-top:25px;">Farm</h3>
+  <button onclick="startFarm()">Commencer le farm</button>
+  <div class="progress-container">
+    <div class="progress-bar" id="bar">1%</div>
+  </div>
+
+  <div class="console" id="console"></div>
+</div>
+
+</div>
+
+<script>
+/* ================= FUNCTIONS ================= */
+function startScript(){
+  document.getElementById("startScreen").style.display="none";
+  document.getElementById("loader").style.display="flex";
+  let loadBar = document.getElementById("loadBar");
+  let width=0;
+  let messages=["Connecting...","Bypassing anti-cheat...","Injecting scripts...","Loading modules...","Finalizing..."];
+  let msgIndex=0;
+  let interval=setInterval(()=>{
+    if(width>=100){clearInterval(interval);document.getElementById("loader").style.display="none";document.getElementById("app").style.display="flex";document.body.style.overflow="auto";}
+    else{width++;loadBar.style.width=width+"%";loadBar.innerHTML=width+"%";
+      if(width%20===0 && msgIndex<messages.length){console.log(messages[msgIndex]);msgIndex++;}}},30);
+}
+
+function alertStuff(msg){alert(msg);}
+function teleport(place){log("> Téléportation vers "+place+"...");setTimeout(()=>{log("> Succès ✔");},1000);}
+function startFarm(){let bar=document.getElementById("bar");let width=1;bar.innerHTML="1%";bar.style.width="1%";let interval=setInterval(()=>{if(width>=100){clearInterval(interval);log("> Farm terminé ✔");}else{width++;bar.style.width=width+"%";bar.innerHTML=width+"%";}},50);}
+function saveUser(){let user=document.getElementById("username").value;log("> Connexion au compte : "+user+"...");setTimeout(()=>{log("> Compte vérifié ✔");document.getElementById("accountSection").style.display="none";document.getElementById("localPlayerSection").classList.remove("hidden");},1000);}
+function togglePlayerMenu(){document.getElementById("playerMenu").classList.toggle("hidden");}
+function toggleFeature(el, feature){log("> "+feature+" "+(el.checked?"ON ✔":"OFF ❌"));flashConsole();}
+function log(txt){let c=document.getElementById("console");c.innerHTML+=txt+"<br><br>";c.scrollTop=c.scrollHeight;}
+function flashConsole(){let c=document.getElementById("console");c.style.color="#ff0000";setTimeout(()=>{c.style.color="#00ff88";},80);}
+</script>
+
+</body>
+</html>
